@@ -1,14 +1,13 @@
 package ra.controller;
 
-import javafx.scene.effect.SepiaTone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import ra.jwt.JwtTokenProvider;
 import ra.model.entity.ERoles;
@@ -19,13 +18,11 @@ import ra.model.service.UserService;
 import ra.payload.reponse.JwtReponse;
 import ra.payload.reponse.MessageReponse;
 import ra.payload.request.LoginRequest;
+import ra.payload.request.ResetPassword;
 import ra.payload.request.SignupRequest;
 import ra.sercurity.CustomUserDetail;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +43,11 @@ public class UserController {
     private RoleService roleService;
     @Autowired
     private PasswordEncoder encoder;
+
+    @GetMapping()
+    public List<User> getAllCatalog(){
+        return  userService.findAll();
+    }
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
         if (userService.existsByUserName(signupRequest.getUserName())) {
@@ -98,16 +100,38 @@ public class UserController {
         //Sinh JWT tra ve client
         String jwt = tokenProvider.generateToke(customUserDetail);
         //Lay cac quyen cua user
-        List<String> listRoles = customUserDetail.getAuthorities().stream()
-                .map(item->item.getAuthority()).collect(Collectors.toList());
-        return ResponseEntity.ok(new JwtReponse(jwt,customUserDetail.getUsername(),customUserDetail.getEmail(),
-                customUserDetail.getPhone(),listRoles));
+        List<String> listRoles = customUserDetail.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
+        return ResponseEntity.ok(new JwtReponse(jwt, customUserDetail.getUsername(), customUserDetail.getEmail(), customUserDetail.getPhone(), listRoles));
     }
 
     @GetMapping("/logout")
-    public String logOut(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        new SecurityContextLogoutHandler().logout(request, response, authentication);
-        return "redirect:/login?logout";
+    public ResponseEntity<?> logOut(HttpServletRequest request){
+        String authorizationHeader = request.getHeader("Authorization");
+
+        // Clear the authentication from server-side (in this case, Spring Security)
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok("You have been logged out.");
+    }
+
+    @PutMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPassword resetPassword){
+        CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findByUserId(customUserDetail.getUserId());
+        BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
+        boolean checkPass = bc.matches(resetPassword.getOldPassword(), user.getUserPassword());
+        if (checkPass) {
+            boolean checkDuplicate = bc.matches(resetPassword.getNewPassword(), user.getUserPassword());
+            if (checkDuplicate) {
+                return ResponseEntity.ok(new MessageReponse("Mật khẩu mới phải khác mật khẩu cũ!"));
+            } else {
+                user.setUserPassword(encoder.encode(resetPassword.getNewPassword()));
+                userService.saveOrUpdate(user);
+                return ResponseEntity.ok(new MessageReponse("Đổi mật khẩu thành công !"));
+            }
+        } else {
+            return ResponseEntity.ok(new MessageReponse("Mật khẩu không hợp lệ ! Đổi mật khẩu thất bại"));
+        }
     }
 
 }

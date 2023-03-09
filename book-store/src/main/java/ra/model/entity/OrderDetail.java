@@ -20,9 +20,9 @@ public class OrderDetail {
     private int quantity;
     @Column(name = "totalDetail")
     private float totalDetail;
-//    @OneToMany(mappedBy = "orderDetail")
-//    private List<Books> books = new ArrayList<>();
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "orderId")
-//    private Order order;
+    @OneToMany(mappedBy = "orderDetail")
+    private List<Books> books = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "orderId")
+    private Orders orders;
 }
