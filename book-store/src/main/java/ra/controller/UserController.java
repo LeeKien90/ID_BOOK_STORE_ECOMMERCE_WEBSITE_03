@@ -104,6 +104,10 @@ public class UserController {
                 customUserDetail.getPhone(),listRoles));
     }
 
-
+    @GetMapping("/logout")
+    public String logOut(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        new SecurityContextLogoutHandler().logout(request, response, authentication);
+        return "redirect:/login?logout";
+    }
 
 }
