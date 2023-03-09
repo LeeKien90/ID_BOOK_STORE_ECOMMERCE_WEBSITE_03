@@ -2,6 +2,7 @@ package ra.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import ra.model.service.RoleService;
 import ra.model.service.UserService;
 import ra.payload.reponse.JwtReponse;
 import ra.payload.reponse.MessageReponse;
+import ra.payload.request.ForgotPassword;
 import ra.payload.request.LoginRequest;
 import ra.payload.request.ResetPassword;
 import ra.payload.request.SignupRequest;

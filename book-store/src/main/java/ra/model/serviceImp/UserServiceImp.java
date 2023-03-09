@@ -24,6 +24,11 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmailContaining(email);
+    }
+
+    @Override
     public User findByUserName(String userName) {
         return userRepository.findByUserName(userName);
     }

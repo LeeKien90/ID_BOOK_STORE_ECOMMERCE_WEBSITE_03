@@ -6,6 +6,7 @@ import ra.model.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
+    User findByEmailContaining(String email);
     User findByUserId(Integer userId);
     User findByUserName(String userName);
     boolean existsByUserName(String userName);

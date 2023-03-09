@@ -1,4 +1,4 @@
-use bookstore;
+         use bookstore;
 create table Books (
     bookId int primary key auto_increment,
     bookName nvarchar(100),
@@ -24,7 +24,7 @@ create table User (
                        userName nvarchar(100),
                        firstName nvarchar(50),
                        lastName nvarchar(50),
-                       userPassword nvarchar(50),
+                       userPassword text,
                        email nvarchar(50),
                        phone nvarchar(20),
                        address nvarchar(200),
@@ -86,3 +86,4 @@ create table wishlist(
         foreign key (userId) references user(userId),
         foreign key (booksId) references books(bookId)
 );
+
