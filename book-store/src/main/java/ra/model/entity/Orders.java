@@ -9,8 +9,8 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "Order")
-public class Order {
+@Table(name = "Orders")
+public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "orderId")
@@ -19,10 +19,10 @@ public class Order {
     private float total;
     @Column(name = "created")
     private Date created;
-//    @OneToMany(mappedBy = "order")
-//    private List<OrderDetail> orderDetails = new ArrayList<>();
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    private User user;
+    @OneToMany(mappedBy = "orders")
+    private List<OrderDetail> orderDetails = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User user;
 
 
 }

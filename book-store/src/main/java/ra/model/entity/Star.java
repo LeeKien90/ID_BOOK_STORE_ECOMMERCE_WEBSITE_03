@@ -14,10 +14,10 @@ public class Star {
     private int starId;
     @Column(name = "starChoose")
     private int starChoose;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "bookId")
-//    private Books books;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "userId")
-//    private User user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "bookId")
+    private Books books;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
+    private User user;
 }

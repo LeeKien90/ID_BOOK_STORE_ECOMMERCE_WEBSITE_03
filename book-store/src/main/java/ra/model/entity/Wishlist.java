@@ -12,10 +12,10 @@ public class Wishlist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "wishlistId")
     private int wishlistId;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "bookId")
-//    private Books books;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "userId")
-//    private User user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "bookId")
+    private Books books;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
+    private User user;
 }

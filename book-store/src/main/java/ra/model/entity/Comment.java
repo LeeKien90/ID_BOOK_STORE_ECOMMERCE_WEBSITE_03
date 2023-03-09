@@ -8,14 +8,16 @@ import javax.persistence.*;
 @Entity
 @Table(name = "Comment")
 public class Comment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "commentId")
     private int commentId;
     @Column(name = "content")
     private String content;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "bookId")
-//    private Books books;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "userId")
-//    private User user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "bookId")
+    private Books books;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
+    private User user;
 }

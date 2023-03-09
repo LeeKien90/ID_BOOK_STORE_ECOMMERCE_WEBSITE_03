@@ -39,16 +39,13 @@ public class Books {
     private String bookFormat;
     @Column(name = "bookStatus")
     private boolean bookStatus;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "categoryId")
-//    private Category category;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "orderDetailId")
-//    private OrderDetail orderDetail;
-//
-//    @OneToMany(mappedBy = "books")
-//    private List<TagBooks> tagBooks = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "categoryId")
+    private Category category;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "orderDetailId")
+    private OrderDetail orderDetail;
 
-
-
+    @OneToMany(mappedBy = "books")
+    private List<TagBooks> tagBooks = new ArrayList<>();
 }

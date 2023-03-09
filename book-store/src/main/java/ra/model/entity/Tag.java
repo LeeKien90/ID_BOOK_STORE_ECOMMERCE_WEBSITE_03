@@ -15,6 +15,6 @@ public class Tag {
     @Column(name = "tagId")
     private int tagId;
 
-//    @OneToMany(mappedBy = "tag")
-//    private List<TagBooks> tagBooks = new ArrayList<>();
+    @OneToMany(mappedBy = "tag")
+    private List<TagBooks> tagBooks = new ArrayList<>();
 }

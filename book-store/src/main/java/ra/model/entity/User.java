@@ -1,6 +1,5 @@
 package ra.model.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -45,13 +44,13 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "RoleId"))
     private Set<Roles> listRoles = new HashSet<>();
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Wishlist> wishlists = new ArrayList<>();
-//    @OneToMany(mappedBy = "user")
-//    private List<Star> stars = new ArrayList<>();
-//    @OneToMany(mappedBy = "user")
-//    private List<Comment> comments = new ArrayList<>();
-//    @OneToMany(mappedBy = "user")
-//    private List<Order> orders = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Wishlist> wishlists = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Star> stars = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Orders> orders = new ArrayList<>();
 
 }

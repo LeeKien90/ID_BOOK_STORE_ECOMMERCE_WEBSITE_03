@@ -11,10 +11,10 @@ public class TagBooks {
     @Id
     private int tagBookId;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "tagId")
-//    private Tag tag;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "bookId")
-//    private Books books;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "tagId")
+    private Tag tag;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "bookId")
+    private Books books;
 }

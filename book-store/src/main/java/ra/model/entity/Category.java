@@ -18,6 +18,6 @@ public class Category {
     private String categoryName;
     @Column(name = "CategoryStatus")
     private boolean categoryStatus;
-//    @OneToMany(mappedBy = "category")
-//    private List<Books> books = new ArrayList<>();
+    @OneToMany(mappedBy = "category")
+    private List<Books> books = new ArrayList<>();
 }
