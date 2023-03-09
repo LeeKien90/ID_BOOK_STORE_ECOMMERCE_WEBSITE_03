@@ -9,6 +9,6 @@ import ra.model.entity.Roles;
 import java.util.Optional;
 
 @Repository
-public interface RoleRepository extends JpaRepository {
+public interface RoleRepository extends JpaRepository<Roles,Integer> {
     Optional<Roles> findByRoleName(ERoles roleName);
 }

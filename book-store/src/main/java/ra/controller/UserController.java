@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import ra.jwt.JwtTokenProvider;
 import ra.model.entity.ERoles;
@@ -21,6 +22,8 @@ import ra.payload.request.LoginRequest;
 import ra.payload.request.SignupRequest;
 import ra.sercurity.CustomUserDetail;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -100,4 +103,7 @@ public class UserController {
         return ResponseEntity.ok(new JwtReponse(jwt,customUserDetail.getUsername(),customUserDetail.getEmail(),
                 customUserDetail.getPhone(),listRoles));
     }
+
+
+
 }

@@ -12,10 +12,13 @@ import java.util.List;
 public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "orderId")
+    @Column(name = "orderDetailId")
     private int orderDetailId;
+    @Column(name = "price")
     private float price;
+    @Column(name = "quantity")
     private int quantity;
+    @Column(name = "totalDetail")
     private float totalDetail;
 //    @OneToMany(mappedBy = "orderDetail")
 //    private List<Books> books = new ArrayList<>();
