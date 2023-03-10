@@ -10,7 +10,7 @@ import java.util.Date;
 @Entity
 public class ResetPassword {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String token;
     @OneToOne(targetEntity = User.class,fetch = FetchType.EAGER)

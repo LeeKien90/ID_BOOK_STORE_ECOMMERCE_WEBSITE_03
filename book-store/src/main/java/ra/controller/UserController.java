@@ -1,8 +1,11 @@
 package ra.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,16 +21,11 @@ import ra.model.service.RoleService;
 import ra.model.service.UserService;
 import ra.payload.reponse.JwtReponse;
 import ra.payload.reponse.MessageReponse;
-import ra.payload.request.ForgotPassword;
-import ra.payload.request.LoginRequest;
-import ra.payload.request.ResetPassword;
-import ra.payload.request.SignupRequest;
+import ra.payload.request.*;
 import ra.sercurity.CustomUserDetail;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -49,6 +47,17 @@ public class UserController {
     @GetMapping()
     public List<User> getAllCatalog(){
         return  userService.findAll();
+    }
+
+    @GetMapping("/search")
+    public List<User> searchByName(@RequestParam("name") String lastName){
+        return userService.findByName(lastName);
+    }
+
+    @GetMapping("/sortByName")
+    public ResponseEntity<List<User>> sortUserByUseName(@RequestParam("direction") String direction) {
+        List<User> listUser = userService.softUseByUseName(direction);
+        return new ResponseEntity<>(listUser, HttpStatus.OK);
     }
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
@@ -116,7 +125,7 @@ public class UserController {
         return ResponseEntity.ok("You have been logged out.");
     }
 
-    @PutMapping("/resetPassword")
+    @PutMapping("/resetpassword")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPassword resetPassword){
         CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.findByUserId(customUserDetail.getUserId());
@@ -135,5 +144,78 @@ public class UserController {
             return ResponseEntity.ok(new MessageReponse("Mật khẩu không hợp lệ ! Đổi mật khẩu thất bại"));
         }
     }
+
+    @PutMapping("/updateUser/{userId}")
+    public User updateUser(@PathVariable("userId") int userId, @RequestBody UpdateUser updateUser){
+        User user =userService.findByUserId(userId);
+        user.setFirstName(updateUser.getFirstName());
+        user.setLastName(updateUser.getLastName());
+        user.setEmail(updateUser.getEmail());
+        user.setPhone(updateUser.getPhone());
+        user.setAddress(updateUser.getAddress());
+        user.setCity(updateUser.getCity());
+        user.setPostCode(updateUser.getPostCode());
+        user.setState(updateUser.getState());
+        userService.saveOrUpdate(user);
+        return ResponseEntity.ok(user).getBody();
+    }
+
+    @PostMapping("/delete/{userId}")
+    public User deleteUser(@PathVariable("userId") int userId, @RequestBody UserRequest userRequest){
+        User user = userService.findByUserId(userId);
+        if (!userRequest.isUserStatus()){
+            user.setUserStatus(false);
+            userService.saveOrUpdate(user);
+        }else {
+            user.setUserStatus(true);
+            userService.saveOrUpdate(user);
+        }
+        return ResponseEntity.ok(user).getBody();
+    }
+
+    @PostMapping("/updateAuthorUser/{userId}")
+    public User updateAuthorUser(@PathVariable("userId") int userId, @RequestBody UpdateAuthorUser updateAuthorUser){
+        User user = userService.findByUserId(userId);
+        Set<String> strRoles = updateAuthorUser.getListRoles();
+        Set<Roles> listRoles = new HashSet<>();
+        if(strRoles == null){
+            Roles userRole = roleService.findByRoleName(ERoles.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+            listRoles.add(userRole);
+        }else {
+            strRoles.forEach(role -> {
+                switch (role) {
+                    case "admin":
+                        Roles adminRole = roleService.findByRoleName(ERoles.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+                        listRoles.add(adminRole);
+                    case "moderator":
+                        Roles modRole = roleService.findByRoleName(ERoles.ROLE_MODERATOR)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+                        listRoles.add(modRole);
+                    case "user":
+                        Roles userRole = roleService.findByRoleName(ERoles.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+                        listRoles.add(userRole);
+                }
+            });
+        }
+        user.setListRoles(listRoles);
+        return userService.saveOrUpdate(user);
+    }
+
+    @GetMapping("/getPaggingUser")
+    public ResponseEntity<Map<String,Object>> getPaggingUser(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size){
+        Pageable pageable = PageRequest.of(page,size);
+        Page<User> pageUser = userService.getPaggingUser(pageable);
+        Map<String,Object> data = new HashMap<>();
+        data.put("user",pageUser.getContent());
+        data.put("total",pageUser.getSize());
+        data.put("totalItems",pageUser.getTotalElements());
+        data.put("totalPages",pageUser.getTotalPages());
+        return new ResponseEntity<>(data,HttpStatus.OK);
+    }
+
 
 }

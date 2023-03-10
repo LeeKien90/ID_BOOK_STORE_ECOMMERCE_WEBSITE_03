@@ -25,7 +25,7 @@ import java.util.UUID;
 @RestController
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping("/api/resetPassword")
+@RequestMapping("/api")
 public class ResetPasswordController {
     private PasswordEncoder encoder;
     private SendEmail sendEmail;
@@ -35,10 +35,10 @@ public class ResetPasswordController {
 
     @GetMapping("/resetPassword")
     public ResponseEntity<?> resetPassword(@RequestParam("email") String userEmail, HttpServletRequest request) {
-        User user = (User) userService.findByUserName(userEmail);
+
         if (userService.existsByEmail(userEmail)) {
             User users = (User) userService.findByEmail(userEmail);
-            UserDetails userDetails = customUserDetailService.loadUserByUsername(user.getUserName());
+            UserDetails userDetails = customUserDetailService.loadUserByUsername(users.getUserName());
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -46,18 +46,18 @@ public class ResetPasswordController {
             ResetPassword myToken = new ResetPassword();
             myToken.setToken( token);
             String mess= "token is valid for 5 minutes.\n"+"Your token: " +token;
-            myToken.setUser(user);
+            myToken.setUser(users);
             Date now = new Date();
             myToken.setStartDate(now);
-            resetPasswordService.saveOfUpdate(myToken);
-            sendEmail.sendSimpleMessage(user.getEmail(),
+            resetPasswordService.saveOrUpdate(myToken);
+            sendEmail.sendSimpleMessage(users.getEmail(),
                     "Reset your password", mess);
             return ResponseEntity.ok("Email sent! Please check your email");
         } else {
             return new ResponseEntity<>(new MessageReponse("Email is not already"), HttpStatus.EXPECTATION_FAILED);
         }
     }
-    @PostMapping("/creatNewPass")
+    @PutMapping("/creatNewPass")
     public ResponseEntity<?> creatNewPass(@RequestParam("token") String token, @RequestParam("newPassword") String newPassword) {
         CustomUserDetail userDetails = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ResetPassword passwordResetToken = resetPasswordService.getLastTokenByUserId(userDetails.getUserId());
