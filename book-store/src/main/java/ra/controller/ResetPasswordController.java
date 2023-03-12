@@ -67,7 +67,7 @@ public class ResetPasswordController {
             return new ResponseEntity<>(new MessageReponse("Expired Token "), HttpStatus.EXPECTATION_FAILED);
         } else {
             if (passwordResetToken.getToken().equals(token)) {
-                User users = (User) userService.findByUserId(userDetails.getUserId());
+                User users = (User) userService.findById(userDetails.getUserId());
                 users.setUserPassword(encoder.encode(newPassword));
                 userService.saveOrUpdate(users);
                 return new ResponseEntity<>(new MessageReponse("update password successfully "), HttpStatus.OK);

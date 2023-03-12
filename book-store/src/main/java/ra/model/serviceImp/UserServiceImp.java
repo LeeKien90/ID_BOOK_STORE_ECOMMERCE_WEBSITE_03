@@ -12,7 +12,7 @@ import ra.model.service.UserService;
 import java.util.List;
 
 @Service
-public class UserServiceImp implements UserService {
+public class UserServiceImp implements UserService<User,Integer> {
     @Autowired
     private UserRepository userRepository;
 
@@ -22,9 +22,15 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User findByUserId(Integer userId) {
-        return userRepository.findByUserId(userId);
+    public User findById(Integer id) {
+        return userRepository.findById(id).get();
     }
+
+    @Override
+    public User saveOrUpdate(User user) {
+        return userRepository.save(user);
+    }
+
 
     @Override
     public User findByEmail(String email) {
@@ -55,10 +61,6 @@ public class UserServiceImp implements UserService {
         return userRepository.existsByEmail(email);
     }
 
-    @Override
-    public User saveOrUpdate(User user) {
-        return userRepository.save(user);
-    }
 
     @Override
     public Page<User> getPaggingUser(Pageable pageable) {

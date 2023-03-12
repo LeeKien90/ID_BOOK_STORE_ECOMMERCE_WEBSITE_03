@@ -6,14 +6,11 @@ import ra.model.entity.User;
 
 import java.util.List;
 
-public interface UserService {
-    List<User> findAll();
-    User findByUserId(Integer userId);
+public interface UserService<T,V> extends StoreBookService<T,V>{
     User findByEmail(String email);
     List<User> findByName(String name);
     List<User> softUseByUseName(String direction);
     boolean existsByUserName(String userName);
     boolean existsByEmail(String email);
-    User saveOrUpdate(User user);
     Page<User> getPaggingUser(Pageable pageable);
 }

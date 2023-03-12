@@ -59,7 +59,7 @@ public class UserController {
         List<User> listUser = userService.softUseByUseName(direction);
         return new ResponseEntity<>(listUser, HttpStatus.OK);
     }
-    @PostMapping("/signup")
+    @PostMapping("/signUp")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
         if (userService.existsByUserName(signupRequest.getUserName())) {
             return ResponseEntity.badRequest().body(new MessageReponse("Error: Usermame is already"));
@@ -101,7 +101,7 @@ public class UserController {
         userService.saveOrUpdate(user);
         return ResponseEntity.ok(new MessageReponse("User registered successfully"));
     }
-    @PostMapping("/signin")
+    @PostMapping("/signIn")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUserName(),loginRequest.getPassword())
@@ -115,7 +115,7 @@ public class UserController {
         return ResponseEntity.ok(new JwtReponse(jwt, customUserDetail.getUsername(), customUserDetail.getEmail(), customUserDetail.getPhone(), listRoles));
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/logOut")
     public ResponseEntity<?> logOut(HttpServletRequest request){
         String authorizationHeader = request.getHeader("Authorization");
 
@@ -125,10 +125,10 @@ public class UserController {
         return ResponseEntity.ok("You have been logged out.");
     }
 
-    @PutMapping("/resetpassword")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPassword resetPassword){
+    @PutMapping("/updatePassword")
+    public ResponseEntity<?> updatePassword(@RequestBody ResetPassword resetPassword){
         CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.findByUserId(customUserDetail.getUserId());
+        User user = (User) userService.findById(customUserDetail.getUserId());
         BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
         boolean checkPass = bc.matches(resetPassword.getOldPassword(), user.getUserPassword());
         if (checkPass) {
@@ -145,24 +145,24 @@ public class UserController {
         }
     }
 
-    @PutMapping("/updateUser/{userId}")
-    public User updateUser(@PathVariable("userId") int userId, @RequestBody UpdateUser updateUser){
-        User user =userService.findByUserId(userId);
-        user.setFirstName(updateUser.getFirstName());
-        user.setLastName(updateUser.getLastName());
-        user.setEmail(updateUser.getEmail());
-        user.setPhone(updateUser.getPhone());
-        user.setAddress(updateUser.getAddress());
-        user.setCity(updateUser.getCity());
-        user.setPostCode(updateUser.getPostCode());
-        user.setState(updateUser.getState());
-        userService.saveOrUpdate(user);
-        return ResponseEntity.ok(user).getBody();
+    @PutMapping("/updateUser")
+    public void updateUser(@RequestBody User user){
+        CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User userUpdate = (User) userService.findById(customUserDetail.getUserId());
+        userUpdate.setFirstName(user.getFirstName());
+        userUpdate.setLastName(user.getLastName());
+        userUpdate.setEmail(user.getEmail());
+        userUpdate.setPhone(user.getPhone());
+        userUpdate.setAddress(user.getAddress());
+        userUpdate.setCity(user.getCity());
+        userUpdate.setPostCode(user.getPostCode());
+        userUpdate.setState(user.getState());
+        userService.saveOrUpdate(userUpdate);
     }
 
     @PostMapping("/delete/{userId}")
     public User deleteUser(@PathVariable("userId") int userId, @RequestBody UserRequest userRequest){
-        User user = userService.findByUserId(userId);
+        User user = (User) userService.findById(userId);
         if (!userRequest.isUserStatus()){
             user.setUserStatus(false);
             userService.saveOrUpdate(user);
@@ -175,7 +175,7 @@ public class UserController {
 
     @PostMapping("/updateAuthorUser/{userId}")
     public User updateAuthorUser(@PathVariable("userId") int userId, @RequestBody UpdateAuthorUser updateAuthorUser){
-        User user = userService.findByUserId(userId);
+        User user = (User) userService.findById(userId);
         Set<String> strRoles = updateAuthorUser.getListRoles();
         Set<Roles> listRoles = new HashSet<>();
         if(strRoles == null){
@@ -200,7 +200,7 @@ public class UserController {
             });
         }
         user.setListRoles(listRoles);
-        return userService.saveOrUpdate(user);
+        return (User) userService.saveOrUpdate(user);
     }
 
     @GetMapping("/getPaggingUser")
