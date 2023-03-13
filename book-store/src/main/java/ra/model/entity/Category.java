@@ -1,5 +1,6 @@
 package ra.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -19,5 +20,6 @@ public class Category {
     @Column(name = "CategoryStatus")
     private boolean categoryStatus;
     @OneToMany(mappedBy = "category")
+    @JsonIgnore
     private List<Books> books = new ArrayList<>();
 }

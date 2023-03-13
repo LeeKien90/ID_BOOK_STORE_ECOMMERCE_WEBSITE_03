@@ -42,10 +42,10 @@ public class Books {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoryId")
     private Category category;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "orderDetailId")
-    private OrderDetail orderDetail;
+
 
     @OneToMany(mappedBy = "books")
     private List<TagBooks> tagBooks = new ArrayList<>();
+    @OneToMany(mappedBy = "books")
+    private List<OrderDetail> orderDetails = new ArrayList<>();
 }

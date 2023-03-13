@@ -1,5 +1,6 @@
 package ra.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,9 +21,12 @@ public class OrderDetail {
     private int quantity;
     @Column(name = "totalDetail")
     private float totalDetail;
-    @OneToMany(mappedBy = "orderDetail")
-    private List<Books> books = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "bookId")
+    @JsonIgnore
+    private Books books;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "orderId")
+    @JsonIgnore
     private Orders orders;
 }
