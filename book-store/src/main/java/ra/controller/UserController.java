@@ -206,7 +206,7 @@ public class UserController {
     @GetMapping("/getPaggingUser")
     public ResponseEntity<Map<String,Object>> getPaggingUser(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size){
+            @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page,size);
         Page<User> pageUser = userService.getPaggingUser(pageable);
         Map<String,Object> data = new HashMap<>();
