@@ -14,13 +14,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ra.jwt.JwtTokenProvider;
+import ra.model.entity.Books;
 import ra.model.entity.ERoles;
 import ra.model.entity.Roles;
 import ra.model.entity.User;
+import ra.model.service.BooksService;
 import ra.model.service.RoleService;
 import ra.model.service.UserService;
 import ra.payload.reponse.JwtReponse;
 import ra.payload.reponse.MessageReponse;
+import ra.payload.reponse.WishListBook;
 import ra.payload.request.*;
 import ra.sercurity.CustomUserDetail;
 
@@ -43,6 +46,8 @@ public class UserController {
     private RoleService roleService;
     @Autowired
     private PasswordEncoder encoder;
+    @Autowired
+    private BooksService booksService;
 
     @GetMapping()
     public List<User> getAllCatalog(){
@@ -138,10 +143,10 @@ public class UserController {
             } else {
                 user.setUserPassword(encoder.encode(resetPassword.getNewPassword()));
                 userService.saveOrUpdate(user);
-                return ResponseEntity.ok(new MessageReponse("Đổi mật khẩu thành công !"));
+                return ResponseEntity.ok(new MessageReponse("Change password successfully !"));
             }
         } else {
-            return ResponseEntity.ok(new MessageReponse("Mật khẩu không hợp lệ ! Đổi mật khẩu thất bại"));
+            return ResponseEntity.ok(new MessageReponse("Invalid password !"));
         }
     }
 
@@ -217,5 +222,58 @@ public class UserController {
         return new ResponseEntity<>(data,HttpStatus.OK);
     }
 
+    @PutMapping("addWishList/{bookId}")
+    public ResponseEntity<?> addToWishList(@PathVariable("bookId") int bookId) {
+        Books book = (Books) booksService.findById(bookId);
+        CustomUserDetail customUserDetails = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) userService.findById(customUserDetails.getUserId());
+        user.getWishList().add(book);
+        try {
+
+            userService.saveOrUpdate(user);
+            return ResponseEntity.ok("Add Books To Wishlist");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok("ERROR !");
+        }
+    }
+
+    @PutMapping("removeWishList/{bookId}")
+    public ResponseEntity<?> removeWishList(@PathVariable("bookId") int bookId) {
+        CustomUserDetail customUserDetails = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) userService.findById(customUserDetails.getUserId());
+        for (Books book : user.getWishList()) {
+            if (book.getBookId() == bookId) {
+                user.getWishList().remove(booksService.findById(bookId));
+                break;
+            }
+        }
+        try {
+            userService.saveOrUpdate(user);
+            return ResponseEntity.ok("Remove Book To Wishlist!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok("ERROR!");
+        }
+    }
+
+    @GetMapping("getAllWishList")
+    public ResponseEntity<?> getAllWishList() {
+        CustomUserDetail customUserDetails = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<Books> listBook = booksService.getAllWishList(customUserDetails.getUserId());
+        List<WishListBook> list = new ArrayList<>();
+        for (Books books : listBook) {
+            WishListBook wishListBook = new WishListBook();
+            wishListBook.setBookId(books.getBookId());
+            wishListBook.setBookName(books.getBookName());
+            wishListBook.setImage(books.getImage());
+            wishListBook.setTitle(books.getTitle());
+            wishListBook.setSale(books.getSale());
+            wishListBook.setPrice(books.getPrice());
+            wishListBook.setCategory(books.getCategory());
+            list.add(wishListBook);
+        }
+        return ResponseEntity.ok(list);
+    }
 
 }

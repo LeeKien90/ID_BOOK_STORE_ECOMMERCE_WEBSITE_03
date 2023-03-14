@@ -5,7 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ra.model.entity.Books;
 import ra.model.entity.User;
+import ra.model.repository.BooksRepository;
 import ra.model.repository.UserRepository;
 import ra.model.service.UserService;
 
@@ -15,6 +17,8 @@ import java.util.List;
 public class UserServiceImp implements UserService<User,Integer> {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private BooksRepository booksRepository;
 
     @Override
     public List<User> findAll() {
@@ -65,5 +69,36 @@ public class UserServiceImp implements UserService<User,Integer> {
     @Override
     public Page<User> getPaggingUser(Pageable pageable) {
         return userRepository.findAll(pageable);
+    }
+
+    @Override
+    public boolean addOrDeleteWishList(int userId, int bookId, String action) {
+        User user = userRepository.findById(userId).get();
+        boolean check = false;
+        if (action.equals("add")){
+            // Nếu add vào wishList thì sản phẩm đã có hay không add vào yêu thích cũng được!
+            check = true;
+            user.getWishList().add(booksRepository.findById(bookId).get());
+        }else {
+            for (Books books :user.getWishList()) {
+                if (books.getBookId()==bookId){
+                    user.getWishList().remove(books);
+                    check =true; // Nếu sản phẩm đã có trong yêu thích thì return true;
+                    break;
+                }
+            }
+        }
+        if (check){
+            try {
+                userRepository.save(user);
+                return true;
+            }catch (Exception e){
+                e.printStackTrace();
+                return false;
+            }
+        }else {
+            // sản phẩm chưa có trong danh sách yêu thích
+            return false;
+        }
     }
 }

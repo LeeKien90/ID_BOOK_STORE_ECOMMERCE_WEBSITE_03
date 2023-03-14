@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "User")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,13 +39,15 @@ public class User {
     @Column(name = "UserStatus")
     private boolean userStatus;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "User_Role",joinColumns = @JoinColumn(name = "UserId"),
             inverseJoinColumns = @JoinColumn(name = "RoleId"))
     private Set<Roles> listRoles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<Wishlist> wishlists = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "wishlist",joinColumns = @JoinColumn(name = "UserId"),
+            inverseJoinColumns = @JoinColumn(name = "bookId"))
+    private Set<Books> wishList = new HashSet<>();
     @OneToMany(mappedBy = "user")
     private List<Star> stars = new ArrayList<>();
     @OneToMany(mappedBy = "user")

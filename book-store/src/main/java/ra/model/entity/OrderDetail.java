@@ -17,10 +17,10 @@ public class OrderDetail {
     private int orderDetailId;
     @Column(name = "price")
     private float price;
-    @Column(name = "quantity")
+    @Column(name = "total")
+    private float total;
+    @Column(name = "quantity",columnDefinition = "int default 1")
     private int quantity;
-    @Column(name = "totalDetail")
-    private float totalDetail;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bookId")
     @JsonIgnore

@@ -34,6 +34,11 @@ public class BooksServiceImp implements BooksService<Books,Integer> {
     }
 
     @Override
+    public List<Books> getAllWishList(int userId) {
+        return booksRepository.getAllWishList(userId);
+    }
+
+    @Override
     public List<Books> findAll() {
         try {
             return booksRepository.findAll();

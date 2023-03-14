@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ra.model.entity.Orders;
 import ra.model.entity.User;
 
 import java.util.Collection;
@@ -18,11 +19,19 @@ import java.util.stream.Collectors;
 public class CustomUserDetail implements UserDetails {
     private int userId;
     private String userName;
+//    private String firstName;
+//    private String lastName;
+
     @JsonIgnore
     private String password;
     private String email;
     private String phone;
+//    private String address;
+//    private String city;
+//    private int postCode;
+//    private String state;
     private boolean userStatus;
+//    List<Orders> orders;
     private Collection<? extends GrantedAuthority> authorities;
 
     public static CustomUserDetail mapUserToUserDetail(User user) {
@@ -34,10 +43,17 @@ public class CustomUserDetail implements UserDetails {
         return new CustomUserDetail(
                 user.getUserId(),
                 user.getUserName(),
+//                user.getFirstName(),
+//                user.getLastName(),
                 user.getUserPassword(),
                 user.getEmail(),
                 user.getPhone(),
+//                user.getAddress(),
+//                user.getCity(),
+//                user.getPostCode(),
+//                user.getState(),
                 user.isUserStatus(),
+//                user.getOrders(),
                 listAuthorities
         );
 

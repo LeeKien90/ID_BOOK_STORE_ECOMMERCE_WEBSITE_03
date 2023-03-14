@@ -11,5 +11,6 @@ public interface BooksService<T,V> extends StoreBookService<T,V>{
     List<Books> findBookByBookName(String name);
     List<Books> sortBookByBookName(String direction);
     Page<Books> getPaggingBook(Pageable pageable);
+    List<Books> getAllWishList(int userId);
 
 }
