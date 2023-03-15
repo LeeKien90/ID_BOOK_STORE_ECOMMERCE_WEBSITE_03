@@ -34,17 +34,20 @@ public class OrderController {
     @Autowired
     private UserService userService;
 
-
+    @GetMapping()
+    public List<OrderDetail> getAll(){
+        return orderDetailService.findAll();
+    }
     @PutMapping("/addToCart")
     public ResponseEntity<?> addToCart(@RequestBody OrderDetailRequest orderDetailRequest) {
         CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (customUserDetail!=null){
-            Orders orders = (Orders) orderService.findByUser_UserIdAndOrderStatus(customUserDetail.getUserId(), 0);
+            Orders orders = orderService.findByUser_UserIdAndOrderStatus(customUserDetail.getUserId(), 0);
             if (orders == null) {
-                Orders orDers = new Orders();
-                orDers.setUser((User) userService.findById(customUserDetail.getUserId()));
-                orDers.setOrderStatus(0);
-                orders = (Orders) orderService.saveOrUpdate(orDers);
+                Orders order = new Orders();
+                order.setUser((User) userService.findById(customUserDetail.getUserId()));
+                order.setOrderStatus(0);
+                orders = (Orders) orderService.saveOrUpdate(order);
             }
             try {
 
@@ -75,10 +78,12 @@ public class OrderController {
         }
     }
 
-    @PutMapping("/updateCart/{detailId}")
+    @PutMapping("/updateCart/{orderDetailId}")
     public ResponseEntity<?> updateCart(@PathVariable("orderDetailId")int orderDetailId, @RequestBody UpdateOrderDetail updateOrderDetail){
         OrderDetail orderDetail = (OrderDetail) orderDetailService.findById(orderDetailId);
+        orderDetail.getBooks();
         orderDetail.setQuantity(updateOrderDetail.getQuantity());
+        orderDetail.setTotal(orderDetail.getPrice()*updateOrderDetail.getQuantity());
         orderDetailService.saveOrUpdate(orderDetail);
         return ResponseEntity.ok(orderDetail);
     }

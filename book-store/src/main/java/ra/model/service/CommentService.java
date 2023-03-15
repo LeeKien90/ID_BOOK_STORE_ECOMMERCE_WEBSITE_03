@@ -1,4 +1,6 @@
 package ra.model.service;
 
-public interface CommentService {
+public interface CommentService<T,V> extends StoreBookService<T,V>{
+    void delete(int commentId);
+
 }

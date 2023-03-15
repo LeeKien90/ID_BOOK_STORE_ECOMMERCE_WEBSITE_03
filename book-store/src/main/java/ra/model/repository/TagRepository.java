@@ -6,4 +6,5 @@ import ra.model.entity.Tag;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag,Integer> {
+    Tag findTagByTagName(String tagName);
 }

@@ -14,7 +14,10 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tagId")
     private int tagId;
-
+    @Column(name = "tagName")
+    private String tagName;
+    @Column(name = "tagStatus")
+    private String tagStatus;
     @OneToMany(mappedBy = "tag")
     private List<TagBooks> tagBooks = new ArrayList<>();
 }
