@@ -1,8 +1,8 @@
 package ra.model.service;
 
 import ra.model.entity.Tag;
+import ra.payload.request.TagRequest;
 
 public interface TagService<T,V> extends StoreBookService<T,V>{
-    void delete(int tagId);
-    Tag findTagByTagName(String tagName);
+    Tag mapTagByTagName(TagRequest tagRequest);
 }

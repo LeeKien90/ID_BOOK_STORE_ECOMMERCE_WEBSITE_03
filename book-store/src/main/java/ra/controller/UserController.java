@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -63,6 +64,11 @@ public class UserController {
     public ResponseEntity<List<User>> sortUserByUseName(@RequestParam("direction") String direction) {
         List<User> listUser = userService.softUseByUseName(direction);
         return new ResponseEntity<>(listUser, HttpStatus.OK);
+    }
+
+    @GetMapping("/searchByName2")
+    public List<User> searchName(@RequestParam("name")String name){
+        return userService.findByFirstNameOrLasName(name);
     }
     @PostMapping("/signUp")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
@@ -221,6 +227,8 @@ public class UserController {
         data.put("totalPages",pageUser.getTotalPages());
         return new ResponseEntity<>(data,HttpStatus.OK);
     }
+
+
 
     @PutMapping("addWishList/{bookId}")
     public ResponseEntity<?> addToWishList(@PathVariable("bookId") int bookId) {

@@ -45,7 +45,12 @@ public class Books {
 
 
     @OneToMany(mappedBy = "books")
-    private List<TagBooks> tagBooks = new ArrayList<>();
-    @OneToMany(mappedBy = "books")
     private List<OrderDetail> orderDetails = new ArrayList<>();
+    @OneToMany(mappedBy = "books")
+    private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "books")
+    private List<Star> stars = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable( name = "Tag_Book", joinColumns = @JoinColumn(name = "bookId"), inverseJoinColumns = @JoinColumn(name = "tagId"))
+    private List<Tag> tagList= new ArrayList<>();
 }

@@ -1,5 +1,6 @@
 package ra.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,7 +18,6 @@ public class Tag {
     @Column(name = "tagName")
     private String tagName;
     @Column(name = "tagStatus")
-    private String tagStatus;
-    @OneToMany(mappedBy = "tag")
-    private List<TagBooks> tagBooks = new ArrayList<>();
+    private boolean tagStatus;
+
 }

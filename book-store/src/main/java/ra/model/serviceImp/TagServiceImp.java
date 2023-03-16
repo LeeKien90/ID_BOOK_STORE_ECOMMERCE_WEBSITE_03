@@ -1,12 +1,14 @@
 package ra.model.serviceImp;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ra.model.entity.Tag;
 import ra.model.repository.TagRepository;
 import ra.model.service.TagService;
+import ra.payload.request.TagRequest;
 
 import java.util.List;
-
+@Service
 public class TagServiceImp implements TagService<Tag,Integer> {
     @Autowired
     private TagRepository tagRepository;
@@ -27,12 +29,10 @@ public class TagServiceImp implements TagService<Tag,Integer> {
     }
 
     @Override
-    public void delete(int tagId) {
-        tagRepository.deleteById(tagId);
-    }
-
-    @Override
-    public Tag findTagByTagName(String tagName) {
-        return tagRepository.findTagByTagName(tagName);
+    public Tag mapTagByTagName(TagRequest tagRequest) {
+        Tag tagNew = new Tag();
+        tagNew.setTagName(tagRequest.getTagName());
+        tagNew.setTagStatus(true);
+        return tagNew;
     }
 }

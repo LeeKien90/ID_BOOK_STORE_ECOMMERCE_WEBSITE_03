@@ -9,10 +9,12 @@ import ra.model.entity.Books;
 import ra.model.entity.OrderDetail;
 import ra.model.entity.Orders;
 import ra.model.entity.User;
+import ra.model.sendEmail.SendEmail;
 import ra.model.service.BooksService;
 import ra.model.service.OrderDetailService;
 import ra.model.service.OrderService;
 import ra.model.service.UserService;
+import ra.payload.request.OrderCheckoutRequest;
 import ra.payload.request.OrderDetailRequest;
 import ra.payload.request.UpdateOrderDetail;
 import ra.sercurity.CustomUserDetail;
@@ -33,6 +35,8 @@ public class OrderController {
     private BooksService booksService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private SendEmail sendEmail;
 
     @GetMapping()
     public List<OrderDetail> getAll(){
@@ -42,7 +46,7 @@ public class OrderController {
     public ResponseEntity<?> addToCart(@RequestBody OrderDetailRequest orderDetailRequest) {
         CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (customUserDetail!=null){
-            Orders orders = orderService.findByUser_UserIdAndOrderStatus(customUserDetail.getUserId(), 0);
+            Orders orders = (Orders) orderService.findByUser_UserIdAndOrderStatus(customUserDetail.getUserId(), 0);
             if (orders == null) {
                 Orders order = new Orders();
                 order.setUser((User) userService.findById(customUserDetail.getUserId()));
@@ -95,6 +99,48 @@ public class OrderController {
             return ResponseEntity.ok().body("Delete successfully");
         } catch (Exception ex) {
             return ResponseEntity.ok().body("Delete error");
+        }
+    }
+
+    @PutMapping("/checkOut")
+    public ResponseEntity<?> checkout(@RequestBody OrderCheckoutRequest checkoutRequest) {
+        CustomUserDetail customUserDetails = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Orders orders = orderService.findByUser_UserIdAndOrderStatus(customUserDetails.getUserId(),0);
+        if (orders.getOrderId()==checkoutRequest.getOrderId()){
+            try {
+                Orders result = (Orders) orderService.saveOrUpdate(orderService.mapCartConfirmToCart(orders, checkoutRequest));
+                for (OrderDetail detail : result.getOrderDetails()) {
+                    Books book = detail.getBooks();
+                    book.setQuantity(book.getQuantity() - detail.getQuantity());
+                    booksService.saveOrUpdate(book);
+                }
+                String subject = "Payment successfully: " + result.getLastName();
+                String mess = "Thanks for payment. Thank you for your purchase. Your order is being confirmed. Delivery time will be updated after successful confirmation. Please check your email for the latest information.\n" +
+                        "Detail oder:\n";
+                String sDetail = "";
+                float total = 0;
+                for (OrderDetail detail : result.getOrderDetails()) {
+                    sDetail += detail.getBooks().getBookName() + " x" + detail.getQuantity() + " " + " x" + detail.getPrice() + "vnd" + "\n";
+                    total += detail.getQuantity() * detail.getPrice();
+                }
+                mess = mess + sDetail +
+                        "-------------------------------------------------\n" +
+                        "Total: " + total  + "vnd.\n" +
+                        "Full name: " + result.getLastName() + " " + result.getFirstName() + ".\n" +
+                        "Phone: " + result.getPhone() + ".\n" +
+                        "Address: " + result.getCity() + " " + result.getState() + " " + result.getAddress()
+                ;
+                sendEmail.sendSimpleMessage(result.getEmail(),
+                        subject, mess);
+                Orders newOrder = new Orders();
+                newOrder.setUser((User) userService.findById(customUserDetails.getUserId()));
+                Orders pendingOrder = (Orders) orderService.saveOrUpdate(newOrder);
+                return new ResponseEntity<>(pendingOrder, HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }else {
+            return new ResponseEntity<>("Có lỗi trong quá trình sử lý",HttpStatus.BAD_REQUEST);
         }
     }
 }

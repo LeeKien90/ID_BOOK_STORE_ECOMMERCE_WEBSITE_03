@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import ra.model.entity.Orders;
 import ra.model.repository.OrderRepository;
 import ra.model.service.OrderService;
+import ra.payload.request.OrderCheckoutRequest;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 @Service
 public class OrderServiceImp implements OrderService<Orders,Integer> {
@@ -28,6 +31,21 @@ public class OrderServiceImp implements OrderService<Orders,Integer> {
 
     @Override
     public Orders findByUser_UserIdAndOrderStatus(int userId, int orderStatus) {
-        return orderRepository.findByUser_UserIdAndOrderStatus(userId,orderStatus);
+        return (Orders) orderRepository.findByUser_UserIdAndOrderStatus(userId,orderStatus);
+    }
+
+    @Override
+    public Orders mapCartConfirmToCart(Orders orders, OrderCheckoutRequest checkoutRequest) {
+        orders.setFirstName(checkoutRequest.getFirstName());
+        orders.setLastName(checkoutRequest.getLastName());
+        orders.setAddress(checkoutRequest.getAddress());
+        orders.setCity(checkoutRequest.getCity());
+        orders.setEmail(checkoutRequest.getEmail());
+        orders.setCreated(LocalDateTime.now());
+        orders.setPhone(checkoutRequest.getPhone());
+        orders.setPostCode(checkoutRequest.getPostCode());
+        orders.setState(checkoutRequest.getState());
+        orders.setOrderStatus(1);
+        return orders;
     }
 }

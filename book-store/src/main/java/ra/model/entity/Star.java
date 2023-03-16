@@ -1,5 +1,6 @@
 package ra.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,8 +17,10 @@ public class Star {
     private int starChoose;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bookId")
+    @JsonIgnore
     private Books books;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
+    @JsonIgnore
     private User user;
 }

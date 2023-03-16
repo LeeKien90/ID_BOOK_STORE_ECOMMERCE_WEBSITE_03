@@ -101,4 +101,14 @@ public class UserServiceImp implements UserService<User,Integer> {
             return false;
         }
     }
+
+    @Override
+    public User findByUserName(String userName) {
+        return userRepository.findByUserName(userName);
+    }
+
+    @Override
+    public List<User> findByFirstNameOrLasName(String name) {
+        return userRepository.searchByFirstNameOrLastName(name);
+    }
 }

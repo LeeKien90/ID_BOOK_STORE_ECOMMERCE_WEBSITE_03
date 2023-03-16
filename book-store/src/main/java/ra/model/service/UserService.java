@@ -14,4 +14,6 @@ public interface UserService<T,V> extends StoreBookService<T,V>{
     boolean existsByEmail(String email);
     Page<User> getPaggingUser(Pageable pageable);
     boolean addOrDeleteWishList(int userId,int bookId,String action);
+    User findByUserName(String userName);
+    List<User> findByFirstNameOrLasName(String name);
 }
