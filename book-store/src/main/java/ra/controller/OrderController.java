@@ -19,6 +19,7 @@ import ra.payload.request.OrderDetailRequest;
 import ra.payload.request.UpdateOrderDetail;
 import ra.sercurity.CustomUserDetail;
 
+import javax.persistence.criteria.Order;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,9 @@ public class OrderController {
     private SendEmail sendEmail;
 
     @GetMapping()
-    public List<OrderDetail> getAll(){
-        return orderDetailService.findAll();
+    public Orders getAll(){
+        CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return (Orders) orderService.findOrdersByUser_UserId(customUserDetail.getUserId());
     }
     @PutMapping("/addToCart")
     public ResponseEntity<?> addToCart(@RequestBody OrderDetailRequest orderDetailRequest) {
@@ -60,13 +62,13 @@ public class OrderController {
                 Books books = (Books) booksService.findById(orderDetailRequest.getBookId());
                 orderDetail.setBooks(books);
                 orderDetail.setQuantity(orderDetailRequest.getQuantity());
-                orderDetail.setPrice(books.getPrice() * orderDetailRequest.getQuantity());
+                orderDetail.setPrice(books.getPrice());
+                orderDetail.setTotal(books.getPrice() * orderDetailRequest.getQuantity());
                 for (OrderDetail o : orders.getOrderDetails()) {
                     if (o.getBooks().getBookId() == books.getBookId()) {
                         orderDetail.setQuantity(orderDetailRequest.getQuantity() + o.getQuantity());
-                        orderDetail.setPrice(books.getPrice());
-                        orderDetail.setTotal(books.getPrice() * orderDetail.getQuantity());
-                        // dòng 61 để gộp hết orderDetail cùng id vào làm 1
+                        orderDetail.setPrice(o.getPrice());
+                        orderDetail.setTotal(o.getPrice() * orderDetail.getQuantity());
                         orderDetail.setOrderDetailId(o.getOrderDetailId());
                         break;
                     }

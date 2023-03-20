@@ -3,6 +3,7 @@ package ra.model.serviceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ra.model.entity.Orders;
+import ra.model.repository.OrderDetailRepository;
 import ra.model.repository.OrderRepository;
 import ra.model.service.OrderService;
 import ra.payload.request.OrderCheckoutRequest;
@@ -14,6 +15,9 @@ import java.util.List;
 public class OrderServiceImp implements OrderService<Orders,Integer> {
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+
     @Override
     public List<Orders> findAll() {
         return orderRepository.findAll();
@@ -48,4 +52,10 @@ public class OrderServiceImp implements OrderService<Orders,Integer> {
         orders.setOrderStatus(1);
         return orders;
     }
+
+    @Override
+    public Orders findOrdersByUser_UserId(int id) {
+        return orderRepository.findOrdersByUser_UserId(id);
+    }
+
 }

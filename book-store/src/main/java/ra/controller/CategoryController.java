@@ -3,6 +3,7 @@ package ra.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ra.model.entity.Category;
 import ra.model.entity.User;
@@ -33,11 +34,13 @@ public class CategoryController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public void createCategory(@RequestBody Category category){
         categoryService.saveOrUpdate(category);
     }
 
     @PutMapping("/update/{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void updateCategory(@PathVariable("categoryId") int categoryId,@RequestBody Category category){
         Category categoryUpdate = (Category) categoryService.findById(categoryId);
         categoryUpdate.setCategoryName(category.getCategoryName());
@@ -45,6 +48,7 @@ public class CategoryController {
     }
 
     @PutMapping("/delete/{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(@PathVariable("categoryId") int categoryId, @RequestBody Category category){
         Category categoryDelete = (Category) categoryService.findById(categoryId);
        categoryDelete.setCategoryStatus(category.isCategoryStatus());

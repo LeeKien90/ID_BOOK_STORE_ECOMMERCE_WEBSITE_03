@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -51,7 +52,8 @@ public class UserController {
     private BooksService booksService;
 
     @GetMapping()
-    public List<User> getAllCatalog(){
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<User> getAllUser(){
         return  userService.findAll();
     }
 
@@ -172,6 +174,7 @@ public class UserController {
     }
 
     @PostMapping("/delete/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public User deleteUser(@PathVariable("userId") int userId, @RequestBody UserRequest userRequest){
         User user = (User) userService.findById(userId);
         if (!userRequest.isUserStatus()){
@@ -185,6 +188,7 @@ public class UserController {
     }
 
     @PostMapping("/updateAuthorUser/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public User updateAuthorUser(@PathVariable("userId") int userId, @RequestBody UpdateAuthorUser updateAuthorUser){
         User user = (User) userService.findById(userId);
         Set<String> strRoles = updateAuthorUser.getListRoles();

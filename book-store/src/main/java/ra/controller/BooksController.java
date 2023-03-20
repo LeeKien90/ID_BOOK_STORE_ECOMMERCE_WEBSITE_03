@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ra.model.entity.Books;
 import ra.model.entity.Category;
@@ -45,6 +46,7 @@ public class BooksController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<?> createBooks(@RequestBody BooksRequest booksRequest) {
         try {
             Books book = new Books();
@@ -57,7 +59,6 @@ public class BooksController {
             book.setPrice(booksRequest.getPrice());
             book.setEdiitonLanguage((booksRequest.getEdiitonLanguage()));
             book.setPublisher(booksRequest.getPublisher());
-            book.setSale(booksRequest.getSale());
             book.setBookFormat(booksRequest.getBookFormat());
             book.setBookStatus(booksRequest.isBookStatus());
             Category category = (Category) categoryService.findById(booksRequest.getCategoryId());
@@ -71,6 +72,7 @@ public class BooksController {
     }
 
     @PutMapping("/update/{bookId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<?> updateBooks(@PathVariable("bookId") int bookId, @RequestBody BooksRequest booksRequest) {
         try {
             Books book = (Books) booksService.findById(bookId);
@@ -83,7 +85,6 @@ public class BooksController {
             book.setPrice(booksRequest.getPrice());
             book.setEdiitonLanguage((booksRequest.getEdiitonLanguage()));
             book.setPublisher(booksRequest.getPublisher());
-            book.setSale(booksRequest.getSale());
             book.setBookFormat(booksRequest.getBookFormat());
             book.setBookStatus(booksRequest.isBookStatus());
             Category category = (Category) categoryService.findById(booksRequest.getCategoryId());
@@ -97,6 +98,7 @@ public class BooksController {
     }
 
     @PutMapping("/delete/{bookId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<?> updateBooks(@PathVariable("bookId") int bookId, @RequestBody BooksDeleteRequest booksDeleteRequest){
         Books book = (Books) booksService.findById(bookId);
         book.setBookStatus(booksDeleteRequest.isBookStatus());

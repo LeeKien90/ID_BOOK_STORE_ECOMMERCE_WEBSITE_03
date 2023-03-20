@@ -111,4 +111,5 @@ public class UserServiceImp implements UserService<User,Integer> {
     public List<User> findByFirstNameOrLasName(String name) {
         return userRepository.searchByFirstNameOrLastName(name);
     }
+
 }

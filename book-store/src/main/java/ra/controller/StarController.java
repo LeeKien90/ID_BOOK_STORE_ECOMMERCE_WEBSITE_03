@@ -53,7 +53,7 @@ public class StarController {
                     Star result = (Star) starService.saveOrUpdate(star);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }else {
-                    return new ResponseEntity<>( "Mua hang truoc khi danh gia",HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>( "Buy before rate",HttpStatus.BAD_REQUEST);
                 }
             }
         } catch (Exception e) {

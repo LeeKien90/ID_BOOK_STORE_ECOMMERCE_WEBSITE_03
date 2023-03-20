@@ -33,8 +33,6 @@ public class Books {
     private String ediitonLanguage;
     @Column(name = "publisher")
     private String publisher;
-    @Column(name = "sale")
-    private int sale;
     @Column(name = "bookFormat")
     private String bookFormat;
     @Column(name = "bookStatus")
